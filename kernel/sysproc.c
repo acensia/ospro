@@ -102,7 +102,12 @@ sys_setpgid(void)
   int pid,pgid;
   argint(0,&pid);
   argint(1,&pgid);
-  if(pid < 0 || pgid < 0){
+  if(pid > 0 && pgid / pid == -1){
+    struct proc* p = getproc(pid);
+    if(p == 0) return -1;
+    p->pgid = pgid;
+  }
+  else if(pid < 0 || pgid < 0){
     return -1;
   }
   else{
@@ -126,7 +131,7 @@ sys_getpgid(void)
     return -1;
   }
   else {
-    return p->pgid;
+    return (p->pgid>0)? p->pgid : p->pgid*-1;
   }
 }
 

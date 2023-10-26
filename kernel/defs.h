@@ -105,6 +105,8 @@ int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 /// I DID!
 struct proc*    getproc(int);
+void            procterm(void);
+int             fork_back(void);
 
 // swtch.S
 void            swtch(struct context*, struct context*);

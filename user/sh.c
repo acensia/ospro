@@ -50,6 +50,8 @@ struct backcmd {
 };
 
 int fork1(void);  // Fork but panics on failure.
+int fork0(void);  // I DID!!
+int fork2(void);
 void panic(char*);
 struct cmd *parsecmd(char*);
 
@@ -123,8 +125,9 @@ runcmd(struct cmd *cmd)
 
   case BACK:
     bcmd = (struct backcmd*)cmd;
-    if(fork1() == 0)
-      runcmd(bcmd->cmd);
+    if(fork2() == 0){
+      printf("this\n");
+      runcmd(bcmd->cmd);}
     break;
   }
   exit(0);
@@ -164,7 +167,7 @@ main(void)
         fprintf(2, "cannot cd %s\n", buf+3);
       continue;
     }
-    if(fork1() == 0)
+    if(fork0() == 0)      //I Modified!
       runcmd(parsecmd(buf));
     wait(0);
   }
@@ -189,6 +192,30 @@ fork1(void)
   return pid;
 }
 
+int
+fork0(void)
+{
+  int pid;
+
+  pid = fork();
+  if(pid == -1)
+    panic("fork");
+  setpgid(pid,0);
+  return pid;
+}
+
+int
+fork2(void)
+{
+  int pid;
+
+  pid = fork();
+  if(pid != 0) setpgid(pid, pid * -1);
+  printf("right%d",pid * -1);
+  if(pid == -1)
+    panic("fork");
+  return pid;
+}
 //PAGEBREAK!
 // Constructors
 
@@ -282,6 +309,7 @@ gettoken(char **ps, char *es, char **q, char **eq)
   case ')':
   case ';':
   case '&':
+    if(*s == '&') ;
   case '<':
     s++;
     break;

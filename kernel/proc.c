@@ -267,6 +267,7 @@ fork(void)
 
   np->parent = p;
   np->pgid = p->pgid;     ///// I DID!!
+  
 
   // copy saved user registers.
   *(np->tf) = *(p->tf);
@@ -602,7 +603,9 @@ int
 kill(int pid)
 {
   struct proc *p;
-
+  int ret = -1;
+  
+  if(pid == 0) pid = (myproc()->pgid) * -1;
   for(p = proc; p < &proc[NPROC]; p++){
     acquire(&p->lock);
     if(p->pid == pid){
@@ -614,9 +617,17 @@ kill(int pid)
       release(&p->lock);
       return 0;
     }
+    else if(p->pid == -pid || ((p->pgid>0)? p->pgid : p->pgid*-1) == -pid){
+      p->killed = 1;
+      if(p->state == SLEEPING){
+        // Wake process from sleep().
+        p->state = RUNNABLE;
+      }
+      ret = 0;
+    }
     release(&p->lock);
   }
-  return -1;
+  return ret;
 }
 
 // Copy to either a user address, or kernel address,
@@ -673,7 +684,8 @@ procdump(void)
       state = states[p->state];
     else
       state = "???";
-    printf("%d %d %s %s", p->pid, p->pgid, state, p->name);  /////I DID!
+    int pgid_a = (p->pgid > 0)? p->pgid : p->pgid*-1;
+    printf("%d %d %s %s", p->pid, pgid_a, state, p->name);  /////I DID!
     printf("\n");
   }
 }
@@ -693,4 +705,32 @@ getproc(int n){
   }
   
   return 0;
+}
+
+void
+procterm(void)
+{
+  static char *states[] = {
+  [UNUSED]    "unused",
+  [SLEEPING]  "sleep ",
+  [RUNNABLE]  "runble",
+  [RUNNING]   "run   ",
+  [ZOMBIE]    "zombie"
+  };
+  struct proc *p;
+//  char *state;
+
+  printf("\n");
+  for(p = proc; p < &proc[NPROC]; p++){
+    if(p->state == UNUSED)
+      continue;
+    if(p->state >= 0 && p->state < NELEM(states) && states[p->state]);
+ //     state = states[p->state];
+    else;
+ //     state = "???";
+    if(p->pgid != 1 && p->pgid > 0) {
+
+    
+      kill(p->pid);}
+  }
 }
