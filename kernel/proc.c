@@ -13,6 +13,7 @@ struct proc proc[NPROC];
 struct proc *initproc;
 
 int nextpid = 1;
+int initpgid = 1;
 struct spinlock pid_lock;
 
 extern void forkret(void);
@@ -83,6 +84,8 @@ allocpid() {
   return pid;
 }
 
+
+
 // Look in the process table for an UNUSED proc.
 // If found, initialize state required to run in the kernel,
 // and return with p->lock held.
@@ -104,6 +107,7 @@ allocproc(void)
 
 found:
   p->pid = allocpid();
+  p->pgid = initpgid;  //////////////////// I DID!
 
   // Allocate a trapframe page.
   if((p->tf = (struct trapframe *)kalloc()) == 0){
@@ -137,6 +141,7 @@ freeproc(struct proc *p)
   p->pagetable = 0;
   p->sz = 0;
   p->pid = 0;
+  p->pgid = 0;    //////////////I DID!!
   p->parent = 0;
   p->name[0] = 0;
   p->chan = 0;
@@ -261,6 +266,7 @@ fork(void)
   np->sz = p->sz;
 
   np->parent = p;
+  np->pgid = p->pgid;     ///// I DID!!
 
   // copy saved user registers.
   *(np->tf) = *(p->tf);
@@ -667,7 +673,24 @@ procdump(void)
       state = states[p->state];
     else
       state = "???";
-    printf("%d %s %s", p->pid, state, p->name);
+    printf("%d %d %s %s", p->pid, p->pgid, state, p->name);  /////I DID!
     printf("\n");
   }
+}
+
+
+///I DID!
+struct proc*
+getproc(int n){
+  struct proc* i;
+  if(n == 0) {
+    return myproc();
+  }
+  for(i = proc; i < &proc[NPROC]; i++){
+    if(i->pid == n){
+      return i;
+    }
+  }
+  
+  return 0;
 }

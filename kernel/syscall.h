@@ -21,5 +21,7 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 #ifdef SNU
-#define SYS_kthtest 22
+// PA2
+#define SYS_setpgid 22
+#define SYS_getpgid 23
 #endif

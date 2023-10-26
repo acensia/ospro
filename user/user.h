@@ -24,7 +24,9 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 #ifdef SNU
-int kthtest(int);
+// PA2
+int setpgid(int, int);
+int getpgid(int);
 #endif
 
 // ulib.c

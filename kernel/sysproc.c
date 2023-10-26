@@ -96,13 +96,37 @@ sys_uptime(void)
   return xticks;
 }
 
-#ifdef SNU
-uint64 sys_kthtest(void)
+uint64
+sys_setpgid(void)
 {
-  int n;
-
-  if(argint(0, &n) < 0)
+  int pid,pgid;
+  argint(0,&pid);
+  argint(1,&pgid);
+  if(pid < 0 || pgid < 0){
     return -1;
-  return kthtest(n);
+  }
+  else{
+    struct proc* p = getproc(pid);
+    if(p == 0) return -1;
+    if(pgid == 0) p->pgid = p->pid;
+    else p->pgid = pgid;
+  }
+  return 0;
 }
-#endif
+
+
+uint64
+sys_getpgid(void)
+{
+  int pid;
+  argint(0,&pid);
+  if(pid < 0) return -1;
+  struct proc* p = getproc(pid);
+  if(p == 0){
+    return -1;
+  }
+  else {
+    return p->pgid;
+  }
+}
+

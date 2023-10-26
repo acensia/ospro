@@ -36,5 +36,6 @@ entry("getpid");
 entry("sbrk");
 entry("sleep");
 entry("uptime");
-# PA6
-entry("kthtest");
+# PA2
+entry("setpgid");
+entry("getpgid");

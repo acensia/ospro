@@ -104,9 +104,8 @@ extern uint64 sys_unlink(void);
 extern uint64 sys_wait(void);
 extern uint64 sys_write(void);
 extern uint64 sys_uptime(void);
-#ifdef SNU
-extern uint64 sys_kthtest(void);
-#endif
+extern uint64 sys_setpgid(void);
+extern uint64 sys_getpgid(void); 
 
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -130,10 +129,10 @@ static uint64 (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
-#ifdef SNU
-[SYS_kthtest] sys_kthtest,
-#endif
+[SYS_setpgid] sys_setpgid,
+[SYS_getpgid] sys_getpgid,
 };
+
 
 void
 syscall(void)
